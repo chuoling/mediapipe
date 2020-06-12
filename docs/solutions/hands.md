@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Hand
+title: Hands
 parent: Solutions
 nav_order: 3
 ---
