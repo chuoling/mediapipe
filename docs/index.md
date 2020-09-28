@@ -10,7 +10,7 @@ nav_order: 1
 
 ## Live ML anywhere
 
-Cross-platform, customizable ML solutions for live media
+[MediaPipe](https://google.github.io/mediapipe/) offers cross-platform, customizable ML solutions for live and streaming media.
 
 ![accelerated.png](images/accelerated_small.png)                                                               | ![cross_platform.png](images/cross_platform_small.png)
 :------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------:
