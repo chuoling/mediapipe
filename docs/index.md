@@ -14,7 +14,7 @@ Cross-platform, customizable ML solutions for live media
 
 ![accelerated.png](images/accelerated_small.png)                                                               | ![cross_platform.png](images/cross_platform_small.png)
 :------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------:
-***End-to-End acceleration***: *built-in fast ML inference and processing accelerated even on common hardware* | ***Build one, deploy anywhere***: *Unified solution works across Android, iOS, desktop/cloud, web and IoT*
+***End-to-End acceleration***: *built-in fast ML inference and processing accelerated even on common hardware* | ***Build once, deploy anywhere***: *Unified solution works across Android, iOS, desktop/cloud, web and IoT*
 ![ready_to_use.png](images/ready_to_use_small.png)                                                             | ![open_source.png](images/open_source_small.png)
 ***Ready-to-use solutions***: *Cutting-edge ML solutions demonstrating full power of the framework*            | ***Free and open source***: *Framework and solutions both under Apache 2.0, fully extensible and customizable*
 
