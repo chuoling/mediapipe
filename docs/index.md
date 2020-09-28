@@ -10,7 +10,7 @@ nav_order: 1
 
 ## Live ML anywhere
 
-Cross-platform, customizable ML solutions for live media!
+Cross-platform, customizable ML solutions for live media
 
 ![accelerated.png](images/accelerated_small.png)                                                               | ![cross_platform.png](images/cross_platform_small.png)
 :------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------:
