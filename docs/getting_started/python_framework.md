@@ -2,6 +2,7 @@
 layout: default
 title: MediaPipe Python Framework
 parent: MediaPipe in Python
+grand_parent: Getting Started
 ---
 
 # MediaPipe Python Framework

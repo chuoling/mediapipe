@@ -2,6 +2,7 @@
 layout: default
 title: Hello World! on Android
 parent: MediaPipe on Android
+grand_parent: Getting Started
 nav_order: 1
 ---
 

@@ -2,6 +2,7 @@
 layout: default
 title: Hello World! on iOS
 parent: MediaPipe on iOS
+grand_parent: Getting Started
 nav_order: 1
 ---
 

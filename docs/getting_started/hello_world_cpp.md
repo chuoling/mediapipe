@@ -2,6 +2,7 @@
 layout: default
 title: Hello World! in C++
 parent: MediaPipe in C++
+grand_parent: Getting Started
 nav_order: 1
 ---
 

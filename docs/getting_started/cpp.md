@@ -2,6 +2,7 @@
 layout: default
 title: MediaPipe in C++
 parent: Getting Started
+has_children: true
 nav_order: 3
 ---
 
