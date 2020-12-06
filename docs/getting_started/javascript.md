@@ -2,7 +2,7 @@
 layout: default
 title: MediaPipe in JavaScript
 parent: Getting Started
-nav_order: 5
+nav_order: 4
 ---
 
 # MediaPipe in JavaScript

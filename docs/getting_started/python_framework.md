@@ -3,6 +3,7 @@ layout: default
 title: MediaPipe Python Framework
 parent: MediaPipe in Python
 grand_parent: Getting Started
+nav_order: 1
 ---
 
 # MediaPipe Python Framework
