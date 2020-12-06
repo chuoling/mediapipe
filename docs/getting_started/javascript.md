@@ -20,6 +20,6 @@ packages available on [npm](https://www.npmjs.com/search?q=mediapipe).
 To learn more about configuration options and usage examples, please find
 details in each solution via the links below:
 
-*   [MediaPipe Face Mesh](https://google.github.io/mediapipe/solutions/face_mesh#javascript-solution-api)
-*   [MediaPipe Hands](https://google.github.io/mediapipe/solutions/hands#javascript-solution-api)
-*   [MediaPipe Pose](https://google.github.io/mediapipe/solutions/pose#javascript-solution-api)
+*   [MediaPipe Face Mesh](../solutions/face_mesh#javascript-solution-api)
+*   [MediaPipe Hands](../solutions/hands#javascript-solution-api)
+*   [MediaPipe Pose](../solutions/pose#javascript-solution-api)

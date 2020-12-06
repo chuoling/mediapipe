@@ -30,4 +30,4 @@ Please see these [instructions](./python.md).
 
 ### JavaScript
 
-Please see these [instructions](./js.md).
+Please see these [instructions](./javascript.md).
