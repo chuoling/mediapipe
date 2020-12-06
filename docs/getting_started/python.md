@@ -3,6 +3,7 @@ layout: default
 title: MediaPipe in Python
 parent: Getting Started
 has_children: true
+has_toc: false
 nav_order: 4
 ---
 
