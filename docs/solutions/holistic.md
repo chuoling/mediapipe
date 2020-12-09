@@ -8,7 +8,7 @@ nav_order: 6
 # MediaPipe Holistic
 {: .no_toc }
 
-<details open markdown="block">
+<details>
   <summary>
     Table of contents
   </summary>
@@ -23,6 +23,7 @@ nav_order: 6
 TODO: Adopt some general overview content from blog post.
 
 TODO: Replace GIF.
+
 ![pose_tracking_upper_body_example.gif](../images/mobile/pose_tracking_upper_body_example.gif)
 | :--------------------------------------------------------------------------------------------:
 | *Fig 1. Example of MediaPipe Holistic.* |
