@@ -48,6 +48,14 @@ details in each solution via the links below:
 *   [MediaPipe Face Mesh](../solutions/face_mesh#python-solution-api)
 *   [MediaPipe Hands](../solutions/hands#python-solution-api)
 *   [MediaPipe Pose](../solutions/pose#python-solution-api)
+*   [MediaPipe Holistic](../solutions/holistic#python-solution-api)
+
+## MediaPipe on Google Colab
+
+*   [MediaPipe Face Mesh Colab](https://mediapipe.page.link/face_mesh_py_colab)
+*   [MediaPipe Hands Colab](https://mediapipe.page.link/hands_py_colab)
+*   [MediaPipe Pose Colab](https://mediapipe.page.link/pose_py_colab)
+*   [MediaPipe Holistic Colab](https://mediapipe.page.link/holistic_py_colab)
 
 ## MediaPipe Python Framework
 

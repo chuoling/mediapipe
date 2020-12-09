@@ -232,9 +232,15 @@ for idx, file in enumerate(file_list):
   print('handedness:', results.multi_handedness)
   if not results.multi_hand_landmarks:
     continue
+  image_hight, image_width, _ = image.shape
   annotated_image = image.copy()
   for hand_landmarks in results.multi_hand_landmarks:
     print('hand_landmarks:', hand_landmarks)
+    print(
+        f'index finger tip coordinate: (',
+        f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width}, '
+        f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_hight})'
+    )
     mp_drawing.draw_landmarks(
         annotated_image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
   cv2.imwrite(
@@ -277,8 +283,8 @@ cap.release()
 ### JavaScript Solution API
 
 Please first see general [introduction](../getting_started/javascript.md) on
-MediaPipe in JavaScript, then learn more in the companion [web demo] and the
-following usage example.
+MediaPipe in JavaScript, then learn more in the companion [web demo] and a
+[fun application], and the following usage example.
 
 Supported configuration options:
 
@@ -420,4 +426,5 @@ Please refer to [these instructions](../index.md#mediapipe-on-the-web).
 
 [Colab]:https://mediapipe.page.link/hands_py_colab
 
-[web demo]:https://mediapipe.dev/demo/hands
+[web demo]:https://code.mediapipe.dev/codepen/hands
+[fun application]:https://code.mediapipe.dev/codepen/defrost

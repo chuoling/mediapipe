@@ -396,7 +396,7 @@ function onResults(results) {
   canvasCtx.restore();
 }
 
-const faceMesh = new Hands({locateFile: (file) => {
+const faceMesh = new FaceMesh({locateFile: (file) => {
   return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
 }});
 faceMesh.setOptions({
@@ -500,4 +500,4 @@ only works for a single face. For visual reference, please refer to *Fig. 4*.
 
 [Colab]:https://mediapipe.page.link/face_mesh_py_colab
 
-[web demo]:https://mediapipe.dev/demo/face_mesh
+[web demo]:https://code.mediapipe.dev/codepen/face_mesh

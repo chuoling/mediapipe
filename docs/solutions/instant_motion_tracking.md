@@ -2,7 +2,7 @@
 layout: default
 title: Instant Motion Tracking
 parent: Solutions
-nav_order: 9
+nav_order: 10
 ---
 
 # MediaPipe Instant Motion Tracking

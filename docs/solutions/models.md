@@ -54,6 +54,14 @@ nav_order: 30
     [TFLite model](https://github.com/google/mediapipe/tree/master/mediapipe/modules/pose_landmark/pose_landmark_upper_body.tflite)
 *   [Model card](https://mediapipe.page.link/blazepose-mc)
 
+### [Holistic](https://google.github.io/mediapipe/solutions/holistic)
+
+TODO: Verify model links and model card short URL
+
+*   Hand recrop model:
+    [TFLite model](https://github.com/google/mediapipe/tree/master/mediapipe/modules/holistic_landmark/hand_recrop.tflite)
+*   [Model card](https://mediapipe.page.link/holistic_mc)
+
 ### [Hair Segmentation](https://google.github.io/mediapipe/solutions/hair_segmentation)
 
 *   [TFLite model](https://github.com/google/mediapipe/tree/master/mediapipe/models/hair_segmentation.tflite)

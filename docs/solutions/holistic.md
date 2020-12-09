@@ -2,10 +2,10 @@
 layout: default
 title: Pose
 parent: Solutions
-nav_order: 5
+nav_order: 6
 ---
 
-# MediaPipe Pose
+# MediaPipe Holistic
 {: .no_toc }
 
 1. TOC
@@ -14,28 +14,16 @@ nav_order: 5
 
 ## Overview
 
-Human pose estimation from video plays a critical role in various applications
-such as quantifying physical exercises, sign language recognition, and full-body
-gesture control. For example, it can form the basis for yoga, dance, and fitness
-applications. It can also enable the overlay of digital content and information
-on top of the physical world in augmented reality.
+TODO: Adopt some general overview content from blog post.
 
-MediaPipe Pose is a ML solution for high-fidelity body pose tracking, inferring
-33 2D landmarks on the whole body (or 25 upper-body landmarks) from RGB video
-frames utilizing our
-[BlazePose](https://ai.googleblog.com/2020/08/on-device-real-time-body-pose-tracking.html)
-research that also powers the
-[ML Kit Pose Detection API](https://developers.google.com/ml-kit/vision/pose-detection).
-Current state-of-the-art approaches rely primarily on powerful desktop
-environments for inference, whereas our method achieves real-time performance on
-most modern [mobile phones](#mobile), [desktops/laptops](#desktop), in
-[python](#python) and even on the [web](#web).
-
-![pose_tracking_upper_body_example.gif](../images/mobile/pose_tracking_upper_body_example.gif) |
-:--------------------------------------------------------------------------------------------: |
-*Fig 1. Example of MediaPipe Pose for upper-body pose tracking.*                               |
+TODO: Replace GIF.
+![pose_tracking_upper_body_example.gif](../images/mobile/pose_tracking_upper_body_example.gif)
+| :--------------------------------------------------------------------------------------------:
+| *Fig 1. Example of MediaPipe Holistic.* |
 
 ## ML Pipeline
+
+TODO: Replace the followingwith a high-level pipeline description.
 
 The solution utilizes a two-step detector-tracker ML pipeline, proven to be
 effective in our [MediaPipe Hands](./hands.md) and
@@ -47,6 +35,8 @@ invoked only as needed, i.e., for the very first frame and when the tracker
 could no longer identify body pose presence in the previous frame. For other
 frames the pipeline simply derives the ROI from the previous frame’s pose
 landmarks.
+
+TODO: Replace with Holistic modules and subgraphs.
 
 The pipeline is implemented as a MediaPipe
 [graph](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/pose_tracking_gpu.pbtxt)
@@ -70,39 +60,18 @@ to visualize its associated subgraphs, please see
 
 ## Models
 
-### Person/pose Detection Model (BlazePose Detector)
+### Landmark Models
 
-The detector is inspired by our own lightweight
-[BlazeFace](https://arxiv.org/abs/1907.05047) model, used in
-[MediaPipe Face Detection](./face_detection.md), as a proxy for a person
-detector. It explicitly predicts two additional virtual keypoints that firmly
-describe the human body center, rotation and scale as a circle. Inspired by
-[Leonardo’s Vitruvian man](https://en.wikipedia.org/wiki/Vitruvian_Man), we
-predict the midpoint of a person's hips, the radius of a circle circumscribing
-the whole person, and the incline angle of the line connecting the shoulder and
-hip midpoints.
+MediaPipe Holistic utilizes the pose, face and hand landmark models in
+[MediaPipe Pose](./pose.md), [MediaPipe Face Mesh](./face_mesh.md) and
+[MediaPipe Hands](./hands.md) respectively to generate a total of 543 landmarks
+(33 pose landmarks, 468 face landmarks, and 21 hand landmarks per hand).
 
-![pose_tracking_detector_vitruvian_man.png](../images/mobile/pose_tracking_detector_vitruvian_man.png) |
-:----------------------------------------------------------------------------------------------------: |
-*Fig 2. Vitruvian man aligned via two virtual keypoints predicted by BlazePose detector in addition to the face bounding box.* |
+### Hand Recrop Model
 
-### Pose Landmark Model (BlazePose Tracker)
+TODO: Add description for hand recrop model.
 
-The landmark model in MediaPipe Pose comes in two versions: a full-body model
-that predicts the location of 33 pose landmarks (see figure below), and an
-upper-body version that only predicts the first 25. The latter may be more
-accurate than the former in scenarios where the lower-body parts are mostly out
-of view.
-
-Please find more detail in the
-[BlazePose Google AI Blog](https://ai.googleblog.com/2020/08/on-device-real-time-body-pose-tracking.html),
-this [paper](https://arxiv.org/abs/2006.10204) and
-[the model card](./models.md#pose), and the attributes in each landmark
-[below](#pose_landmarks).
-
-![pose_tracking_full_body_landmarks.png](../images/mobile/pose_tracking_full_body_landmarks.png) |
-:----------------------------------------------------------------------------------------------: |
-*Fig 3. 33 pose landmarks.*                                                                      |
+You can also find more information in [the model card](./models.md#holistic)
 
 ## Solution APIs
 
@@ -114,17 +83,17 @@ Naming style and availability may differ slightly across platforms/languages.
 
 If set to `false`, the solution treats the input images as a video stream. It
 will try to detect the most prominent person in the very first images, and upon
-a successful detection further localizes the pose landmarks. In subsequent
-images, it then simply tracks those landmarks without invoking another detection
-until it loses track, on reducing computation and latency. If set to `true`,
-person detection runs every input image, ideal for processing a batch of static,
-possibly unrelated, images. Default to `false`.
+a successful detection further localizes the pose and other landmarks. In
+subsequent images, it then simply tracks those landmarks without invoking
+another detection until it loses track, on reducing computation and latency. If
+set to `true`, person detection runs every input image, ideal for processing a
+batch of static, possibly unrelated, images. Default to `false`.
 
 #### upper_body_only
 
-If set to `true`, the solution outputs only the 25 upper-body pose landmarks.
-Otherwise, it outputs the full set of 33 pose landmarks. Note that
-upper-body-only prediction may be more accurate for use cases where the
+If set to `true`, the solution outputs only the 25 upper-body pose landmarks
+(535 in total) instead of the full set of 33 pose landmarks (543 in total). Note
+that upper-body-only prediction may be more accurate for use cases where the
 lower-body parts are mostly out of view. Default to `false`.
 
 #### smooth_landmarks
@@ -162,6 +131,27 @@ A list of pose landmarks. Each lanmark consists of the following:
 *   `visibility`: A value in `[0.0, 1.0]` indicating the likelihood of the
     landmark being visible (present and not occluded) in the image.
 
+#### face_landmarks
+
+A list of 468 face landmarks. Each landmark consists of `x`, `y` and `z`. `x`
+and `y` are normalized to `[0.0, 1.0]` by the image width and height
+respectively. `z` represents the landmark depth with the depth at center of the
+head being the origin, and the smaller the value the closer the landmark is to
+the camera. The magnitude of `z` uses roughly the same scale as `x`.
+
+#### left_hand_landmarks
+
+A list of 21 hand landmarks on the left hand. Each landmark consists of `x`, `y`
+and `z`. `x` and `y` are normalized to `[0.0, 1.0]` by the image width and
+height respectively. `z` represents the landmark depth with the depth at the
+wrist being the origin, and the smaller the value the closer the landmark is to
+the camera. The magnitude of `z` uses roughly the same scale as `x`.
+
+#### right_hand_landmarks
+
+A list of 21 hand landmarks on the right hand, in the same representation as
+[left_hand_landmarks](#left_hand_landmarks).
+
 ### Python Solution API
 
 Please first follow general [instructions](../getting_started/python.md) to
@@ -180,31 +170,37 @@ Supported configuration options:
 import cv2
 import mediapipe as mp
 mp_drawing = mp.solutions.drawing_utils
-mp_pose = mp.solutions.pose
+mp_holistic = mp.solutions.holistic
 
 # For static images:
-pose = mp_pose.Pose(
+holistic = mp_holistic.Holistic(
     static_image_mode=True, min_detection_confidence=0.5)
 for idx, file in enumerate(file_list):
   image = cv2.imread(file)
   image_hight, image_width, _ = image.shape
   # Convert the BGR image to RGB before processing.
-  results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+  results = holistic.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
   # Print and draw pose landmarks on the image.
   print(
     f'nose coordinates: ('
-    f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
-    f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_hight})'
+    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].x * image_width}, '
+    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].y * image_hight})'
   )
   annotated_image = image.copy()
   mp_drawing.draw_landmarks(
-      annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+      annotated_image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      annotated_image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      annotated_image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      annotated_image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
   cv2.imwrite('/tmp/annotated_image' + str(idx) + '.png', annotated_image)
-pose.close()
+holistic.close()
 
 # For webcam input:
-pose = mp_pose.Pose(
+holistic = mp_holistic.Holistic(
     min_detection_confidence=0.5, min_tracking_confidence=0.5)
 cap = cv2.VideoCapture(0)
 while cap.isOpened():
@@ -220,17 +216,23 @@ while cap.isOpened():
   # To improve performance, optionally mark the image as not writeable to
   # pass by reference.
   image.flags.writeable = False
-  results = pose.process(image)
+  results = holistic.process(image)
 
-  # Draw the pose annotation on the image.
+  # Draw landmark annotation on the image.
   image.flags.writeable = True
   image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
   mp_drawing.draw_landmarks(
-      image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-  cv2.imshow('MediaPipe Pose', image)
+      image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
+  cv2.imshow('MediaPipe Holistic', image)
   if cv2.waitKey(5) & 0xFF == 27:
     break
-pose.close()
+holistic.close()
 cap.release()
 ```
 
@@ -255,7 +257,7 @@ Supported configuration options:
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -282,23 +284,33 @@ function onResults(results) {
                  {color: '#00FF00', lineWidth: 4});
   drawLandmarks(canvasCtx, results.poseLandmarks,
                 {color: '#FF0000', lineWidth: 2});
+  drawConnectors(canvasCtx, results.faceLandmarks, FACEMESH_TESSELATION,
+                 {color: '#C0C0C070', lineWidth: 1});
+  drawConnectors(canvasCtx, results.leftHandLandmarks, HAND_CONNECTIONS,
+                 {color: '#CC0000', lineWidth: 5});
+  drawLandmarks(canvasCtx, results.leftHandLandmarks,
+                {color: '#00FF00', lineWidth: 2});
+  drawConnectors(canvasCtx, results.rightHandLandmarks, HAND_CONNECTIONS,
+                 {color: '#00CC00', lineWidth: 5});
+  drawLandmarks(canvasCtx, results.rightHandLandmarks,
+                {color: '#FF0000', lineWidth: 2});
   canvasCtx.restore();
 }
 
-const pose = new Pose({locateFile: (file) => {
-  return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+const holistic = new Holistic({locateFile: (file) => {
+  return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
 }});
-pose.setOptions({
+holistic.setOptions({
   upperBodyOnly: false,
   smoothLandmarks: true,
   minDetectionConfidence: 0.5,
   minTrackingConfidence: 0.5
 });
-pose.onResults(onResults);
+holistic.onResults(onResults);
 
 const camera = new Camera(videoElement, {
   onFrame: async () => {
-    await pose.send({image: videoElement});
+    await holistic.send({image: videoElement});
   },
   width: 1280,
   height: 720
@@ -320,70 +332,40 @@ to visualize its associated subgraphs, please see
 
 ### Mobile
 
-#### Main Example
+TODO: Verify links to mobile graphs and apps.
 
 *   Graph:
-    [`mediapipe/graphs/pose_tracking/pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/pose_tracking_gpu.pbtxt)
+    [`mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt)
 *   Android target:
-    [(or download prebuilt ARM64 APK)](https://drive.google.com/file/d/17GFIrqEJS6W8UHKXlYevTtSCLxN9pWlY/view?usp=sharing)
-    [`mediapipe/examples/android/src/java/com/google/mediapipe/apps/posetrackinggpu:posetrackinggpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/android/src/java/com/google/mediapipe/apps/posetrackinggpu/BUILD)
+    [(or download prebuilt ARM64 APK)TODO](https://drive.google.com/file/d/17GFIrqEJS6W8UHKXlYevTtSCLxN9pWlY/view?usp=sharing)
+    [`mediapipe/examples/android/src/java/com/google/mediapipe/apps/holisticposetrackinggpu:holisticposetrackinggpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/android/src/java/com/google/mediapipe/apps/holisticposetrackinggpu/BUILD)
 *   iOS target:
-    [`mediapipe/examples/ios/posetrackinggpu:PoseTrackingGpuApp`](http:/mediapipe/examples/ios/posetrackinggpu/BUILD)
-
-#### Upper-body Only
-
-*   Graph:
-    [`mediapipe/graphs/pose_tracking/upper_body_pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/upper_body_pose_tracking_gpu.pbtxt)
-*   Android target:
-    [(or download prebuilt ARM64 APK)](https://drive.google.com/file/d/1uKc6T7KSuA0Mlq2URi5YookHu0U3yoh_/view?usp=sharing)
-    [`mediapipe/examples/android/src/java/com/google/mediapipe/apps/upperbodyposetrackinggpu:upperbodyposetrackinggpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/android/src/java/com/google/mediapipe/apps/upperbodyposetrackinggpu/BUILD)
-*   iOS target:
-    [`mediapipe/examples/ios/upperbodyposetrackinggpu:UpperBodyPoseTrackingGpuApp`](http:/mediapipe/examples/ios/upperbodyposetrackinggpu/BUILD)
+    [`mediapipe/examples/ios/holisticposetrackinggpu:HolisticPoseTrackingGpuApp`](http:/mediapipe/examples/ios/holisticposetrackinggpu/BUILD)
 
 ### Desktop
 
 Please first see general instructions for [desktop](../getting_started/cpp.md)
 on how to build MediaPipe examples.
 
-#### Main Example
+TODO: Verify links to desktop graphs and apps.
 
 *   Running on CPU
     *   Graph:
-        [`mediapipe/graphs/pose_tracking/pose_tracking_cpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/pose_tracking_cpu.pbtxt)
+        [`mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_cpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_cpu.pbtxt)
     *   Target:
-        [`mediapipe/examples/desktop/pose_tracking:pose_tracking_cpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/pose_tracking/BUILD)
+        [`mediapipe/examples/desktop/holistic_pose_tracking:holistic_pose_tracking_cpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/holistic_pose_tracking/BUILD)
 *   Running on GPU
     *   Graph:
-        [`mediapipe/graphs/pose_tracking/pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/pose_tracking_gpu.pbtxt)
+        [`mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt)
     *   Target:
-        [`mediapipe/examples/desktop/pose_tracking:pose_tracking_gpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/pose_tracking/BUILD)
-
-#### Upper-body Only
-
-*   Running on CPU
-    *   Graph:
-        [`mediapipe/graphs/pose_tracking/upper_body_pose_tracking_cpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/upper_body_pose_tracking_cpu.pbtxt)
-    *   Target:
-        [`mediapipe/examples/desktop/upper_body_pose_tracking:upper_body_pose_tracking_cpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/upper_body_pose_tracking/BUILD)
-*   Running on GPU
-    *   Graph:
-        [`mediapipe/graphs/pose_tracking/upper_body_pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/upper_body_pose_tracking_gpu.pbtxt)
-    *   Target:
-        [`mediapipe/examples/desktop/upper_body_pose_tracking:upper_body_pose_tracking_gpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/upper_body_pose_tracking/BUILD)
-
-### Web
-
-Please refer to [these instructions](../index.md#mediapipe-on-the-web).
+        [`mediapipe/examples/desktop/holistic_pose_tracking:holistic_pose_tracking_gpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/holistic_pose_tracking/BUILD)
 
 ## Resources
 
 *   Google AI Blog:
-    [BlazePose - On-device Real-time Body Pose Tracking](https://ai.googleblog.com/2020/08/on-device-real-time-body-pose-tracking.html)
-*   Paper:
-    [BlazePose: On-device Real-time Body Pose Tracking](https://arxiv.org/abs/2006.10204)
-    ([presentation](https://youtu.be/YPpUOTRn5tA))
-*   [Models and model cards](./models.md#pose)
+    [MediaPipe Holistic - Simultaneous Face, Hand and Pose Prediction on Device](https://ai.googleblog.com/2020/08/on-device-real-time-body-pose-tracking.html)
+*   [Models and model cards](./models.md#holistic)
 
-[Colab]:https://mediapipe.page.link/pose_py_colab
+[Colab]:https://mediapipe.page.link/holistic_py_colab
 
-[web demo]:https://code.mediapipe.dev/codepen/pose
+[web demo]:https://code.mediapipe.dev/codepen/holistic

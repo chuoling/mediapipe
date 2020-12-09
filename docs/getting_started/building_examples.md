@@ -20,10 +20,6 @@ Please see these [instructions](./android.md).
 
 Please see these [instructions](./ios.md).
 
-### C++
-
-Please see these [instructions](./cpp.md).
-
 ### Python
 
 Please see these [instructions](./python.md).
@@ -31,3 +27,7 @@ Please see these [instructions](./python.md).
 ### JavaScript
 
 Please see these [instructions](./javascript.md).
+
+### C++
+
+Please see these [instructions](./cpp.md).
