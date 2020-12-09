@@ -8,7 +8,7 @@ nav_order: 6
 # MediaPipe Holistic
 {: .no_toc }
 
-<details>
+<details close markdown="block">
   <summary>
     Table of contents
   </summary>
