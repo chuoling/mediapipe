@@ -8,8 +8,14 @@ nav_order: 5
 # MediaPipe Pose
 {: .no_toc }
 
+<details close markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
 1. TOC
 {:toc}
+</details>
 ---
 
 ## Overview
@@ -191,12 +197,14 @@ for idx, file in enumerate(file_list):
   # Convert the BGR image to RGB before processing.
   results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-  # Print and draw pose landmarks on the image.
+  if not results.pose_landmarks:
+    continue
   print(
-    f'nose coordinates: ('
-    f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
-    f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_hight})'
+      f'Nose coordinates: ('
+      f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].x * image_width}, '
+      f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].y * image_hight})'
   )
+  # Draw pose landmarks on the image.
   annotated_image = image.copy()
   mp_drawing.draw_landmarks(
       annotated_image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)

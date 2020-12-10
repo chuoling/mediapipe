@@ -8,8 +8,14 @@ nav_order: 8
 # MediaPipe Object Detection
 {: .no_toc }
 
+<details close markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
 1. TOC
 {:toc}
+</details>
 ---
 
 ![object_detection_android_gpu.gif](../images/mobile/object_detection_android_gpu.gif)

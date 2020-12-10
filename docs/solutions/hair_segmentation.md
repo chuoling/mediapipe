@@ -8,8 +8,14 @@ nav_order: 7
 # MediaPipe Hair Segmentation
 {: .no_toc }
 
+<details close markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
 1. TOC
 {:toc}
+</details>
 ---
 
 ![hair_segmentation_android_gpu_gif](../images/mobile/hair_segmentation_android_gpu.gif)

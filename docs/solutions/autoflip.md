@@ -8,8 +8,14 @@ nav_order: 13
 # AutoFlip: Saliency-aware Video Cropping
 {: .no_toc }
 
+<details close markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
 1. TOC
 {:toc}
+</details>
 ---
 
 ## Overview

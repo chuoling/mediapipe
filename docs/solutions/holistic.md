@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Pose
+title: Holistic
 parent: Solutions
 nav_order: 6
 ---
@@ -20,45 +20,82 @@ nav_order: 6
 
 ## Overview
 
-TODO: Adopt some general overview content from blog post.
+Live perception of simultaneous [human pose](./pose.md),
+[face landmarks](./face_mesh.md), and [hand tracking](./hands.md) in real-time
+on mobile devices can enable various modern life applications: fitness and sport
+analysis, gesture control and sign language recognition, augmented reality
+try-on and effects. MediaPipe already offers fast and accurate, yet separate,
+solutions for these tasks. Combining them all in real-time into a semantically
+consistent end-to-end solution is a uniquely difficult problem requiring
+simultaneous inference of multiple, dependent neural networks.
 
-TODO: Replace GIF.
-
-![pose_tracking_upper_body_example.gif](../images/mobile/pose_tracking_upper_body_example.gif)
-| :--------------------------------------------------------------------------------------------:
-| *Fig 1. Example of MediaPipe Holistic.* |
+![holistic_sports_and_gestures_example.gif](../images/mobile/holistic_sports_and_gestures_example.gif) |
+:----------------------------------------------------------------------------------------------------: |
+*Fig 1. Example of MediaPipe Holistic.*                                                                |
 
 ## ML Pipeline
 
-TODO: Replace the followingwith a high-level pipeline description.
+The MediaPipe Holistic pipeline integrates separate models for
+[pose](./pose.md), [face](./face_mesh.md) and [hand](./hands.md) components,
+each of which are optimized for their particular domain. However, because of
+their different specializations, the input to one component is not well-suited
+for the others. The pose estimation model, for example, takes a lower, fixed
+resolution video frame (256x256) as input. But if one were to crop the hand and
+face regions from that image to pass to their respective models, the image
+resolution would be too low for accurate articulation. Therefore, we designed
+MediaPipe Holistic as a multi-stage pipeline, which treats the different regions
+using a region appropriate image resolution.
 
-The solution utilizes a two-step detector-tracker ML pipeline, proven to be
-effective in our [MediaPipe Hands](./hands.md) and
-[MediaPipe Face Mesh](./face_mesh.md) solutions. Using a detector, the pipeline
-first locates the person/pose region-of-interest (ROI) within the frame. The
-tracker subsequently predicts the pose landmarks within the ROI using the
-ROI-cropped frame as input. Note that for video use cases the detector is
-invoked only as needed, i.e., for the very first frame and when the tracker
-could no longer identify body pose presence in the previous frame. For other
-frames the pipeline simply derives the ROI from the previous frame’s pose
-landmarks.
+First, we estimate the human pose (top of Fig 2) with [BlazePose](./pose.md)’s
+pose detector and subsequent landmark model. Then, using the inferred pose
+landmarks we derive three regions of interest (ROI) crops for each hand (2x) and
+the face, and employ a re-crop model to improve the ROI. We then crop the
+full-resolution input frame to these ROIs and apply task-specific face and hand
+models to estimate their corresponding landmarks. Finally, we merge all
+landmarks with those of the pose model to yield the full 540+ landmarks.
 
-TODO: Replace with Holistic modules and subgraphs.
+![holistic_pipeline_example.jpg](../images/mobile/holistic_pipeline_example.jpg) |
+:------------------------------------------------------------------------------: |
+*Fig 2. MediaPipe Holistic Pipeline Overview.*                                   |
+
+To streamline the identification of ROIs for face and hands, we utilize a
+tracking approach similar to the one we use for standalone
+[face](./face_mesh.md) and [hand](./hands.md) pipelines. It assumes that the
+object doesn't move significantly between frames and uses estimation from the
+previous frame as a guide to the object region on the current one. However,
+during fast movements, the tracker can lose the target, which requires the
+detector to re-localize it in the image. MediaPipe Holistic uses
+[pose](./pose.md) prediction (on every frame) as an additional ROI prior to
+reduce the response time of the pipeline when reacting to fast movements. This
+also enables the model to retain semantic consistency across the body and its
+parts by preventing a mixup between left and right hands or body parts of one
+person in the frame with another.
+
+In addition, the resolution of the input frame to the pose model is low enough
+that the resulting ROIs for face and hands are still too inaccurate to guide the
+re-cropping of those regions, which require a precise input crop to remain
+lightweight. To close this accuracy gap we use lightweight face and hand re-crop
+models that play the role of
+[spatial transformers](https://arxiv.org/abs/1506.02025) and cost only ~10% of
+corresponding model's inference time.
 
 The pipeline is implemented as a MediaPipe
-[graph](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/pose_tracking_gpu.pbtxt)
+[graph](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_tracking/holistic_tracking_gpu.pbtxt)
 that uses a
-[pose landmark subgraph](https://github.com/google/mediapipe/tree/master/mediapipe/modules/pose_landmark/pose_landmark_gpu.pbtxt)
+[holistic landmark subgraph](https://github.com/google/mediapipe/tree/master/mediapipe/modules/holistic_landmark/holistic_landmark_gpu.pbtxt)
 from the
-[pose landmark module](https://github.com/google/mediapipe/tree/master/mediapipe/modules/pose_landmark)
+[holistic landmark module](https://github.com/google/mediapipe/tree/master/mediapipe/modules/holistic_landmark)
 and renders using a dedicated
-[pose renderer subgraph](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/pose_tracking/subgraphs/pose_renderer_gpu.pbtxt).
+[holistic renderer subgraph](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_tracking/holistic_tracking_to_render_data.pbtxt).
 The
-[pose landmark subgraph](https://github.com/google/mediapipe/tree/master/mediapipe/modules/pose_landmark/pose_landmark_gpu.pbtxt)
+[holistic landmark subgraph](https://github.com/google/mediapipe/tree/master/mediapipe/modules/holistic_landmark/holistic_landmark_gpu.pbtxt)
 internally uses a
-[pose detection subgraph](https://github.com/google/mediapipe/tree/master/mediapipe/modules/pose_detection/pose_detection_gpu.pbtxt)
-from the
-[pose detection module](https://github.com/google/mediapipe/tree/master/mediapipe/modules/pose_detection).
+[pose landmark module](https://github.com/google/mediapipe/tree/master/mediapipe/modules/pose_landmark)
+,
+[hand landmark module](https://github.com/google/mediapipe/tree/master/mediapipe/modules/hand_landmark)
+and
+[face landmark module](https://github.com/google/mediapipe/tree/master/mediapipe/modules/face_landmark/).
+Please check them for implementation details.
 
 Note: To visualize a graph, copy the graph and paste it into
 [MediaPipe Visualizer](https://viz.mediapipe.dev/). For more information on how
@@ -76,9 +113,11 @@ MediaPipe Holistic utilizes the pose, face and hand landmark models in
 
 ### Hand Recrop Model
 
-TODO: Add description for hand recrop model.
-
-You can also find more information in [the model card](./models.md#holistic)
+For cases when the accuracy of the pose model is low enough that the resulting
+ROIs for hands are still too inaccurate we run the additional lightweight hand
+re-crop model that play the role of
+[spatial transformer](https://arxiv.org/abs/1506.02025) and cost only ~10% of
+hand model inference time.
 
 ## Solution APIs
 
@@ -129,7 +168,7 @@ Naming style may differ slightly across platforms/languages.
 
 #### pose_landmarks
 
-A list of pose landmarks. Each lanmark consists of the following:
+A list of pose landmarks. Each landmark consists of the following:
 
 *   `x` and `y`: Landmark coordinates normalized to `[0.0, 1.0]` by the image
     width and height respectively.
@@ -180,29 +219,29 @@ mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
 
 # For static images:
-holistic = mp_holistic.Holistic(
-    static_image_mode=True, min_detection_confidence=0.5)
+holistic = mp_holistic.Holistic(static_image_mode=True)
 for idx, file in enumerate(file_list):
   image = cv2.imread(file)
   image_hight, image_width, _ = image.shape
   # Convert the BGR image to RGB before processing.
   results = holistic.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-  # Print and draw pose landmarks on the image.
-  print(
-    f'nose coordinates: ('
-    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].x * image_width}, '
-    f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].y * image_hight})'
-  )
+  if results.pose_landmarks:
+    print(
+        f'Nose coordinates: ('
+        f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].x * image_width}, '
+        f'{results.pose_landmarks.landmark[mp_holistic.PoseLandmark.NOSE].y * image_hight})'
+    )
+  # Draw pose, left and right hands, and face landmarks on the image.
   annotated_image = image.copy()
-  mp_drawing.draw_landmarks(
-      annotated_image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
   mp_drawing.draw_landmarks(
       annotated_image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS)
   mp_drawing.draw_landmarks(
       annotated_image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
   mp_drawing.draw_landmarks(
       annotated_image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      annotated_image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
   cv2.imwrite('/tmp/annotated_image' + str(idx) + '.png', annotated_image)
 holistic.close()
 
@@ -229,13 +268,13 @@ while cap.isOpened():
   image.flags.writeable = True
   image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
   mp_drawing.draw_landmarks(
-      image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
-  mp_drawing.draw_landmarks(
       image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS)
   mp_drawing.draw_landmarks(
       image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
   mp_drawing.draw_landmarks(
       image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
+  mp_drawing.draw_landmarks(
+      image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS)
   cv2.imshow('MediaPipe Holistic', image)
   if cv2.waitKey(5) & 0xFF == 27:
     break
@@ -339,33 +378,29 @@ to visualize its associated subgraphs, please see
 
 ### Mobile
 
-TODO: Verify links to mobile graphs and apps.
-
 *   Graph:
-    [`mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt)
+    [`mediapipe/graphs/holistic_tracking/holistic_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_tracking/holistic_tracking_gpu.pbtxt)
 *   Android target:
-    [(or download prebuilt ARM64 APK)TODO](https://drive.google.com/file/d/17GFIrqEJS6W8UHKXlYevTtSCLxN9pWlY/view?usp=sharing)
-    [`mediapipe/examples/android/src/java/com/google/mediapipe/apps/holisticposetrackinggpu:holisticposetrackinggpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/android/src/java/com/google/mediapipe/apps/holisticposetrackinggpu/BUILD)
+    [(or download prebuilt ARM64 APK)](https://drive.google.com/file/d/1o-Trp2GIRitA0OvmZWUQjVMa476xpfgK/view?usp=sharing)
+    [`mediapipe/examples/android/src/java/com/google/mediapipe/apps/holistictrackinggpu:holistictrackinggpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/android/src/java/com/google/mediapipe/apps/holistictrackinggpu/BUILD)
 *   iOS target:
-    [`mediapipe/examples/ios/holisticposetrackinggpu:HolisticPoseTrackingGpuApp`](http:/mediapipe/examples/ios/holisticposetrackinggpu/BUILD)
+    [`mediapipe/examples/ios/holistictrackinggpu:HolisticTrackingGpuApp`](http:/mediapipe/examples/ios/holistictrackinggpu/BUILD)
 
 ### Desktop
 
 Please first see general instructions for [desktop](../getting_started/cpp.md)
 on how to build MediaPipe examples.
 
-TODO: Verify links to desktop graphs and apps.
-
 *   Running on CPU
     *   Graph:
-        [`mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_cpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_cpu.pbtxt)
+        [`mediapipe/graphs/holistic_tracking/holistic_tracking_cpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_tracking/holistic_tracking_cpu.pbtxt)
     *   Target:
-        [`mediapipe/examples/desktop/holistic_pose_tracking:holistic_pose_tracking_cpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/holistic_pose_tracking/BUILD)
+        [`mediapipe/examples/desktop/holistic_tracking:holistic_tracking_cpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/holistic_tracking/BUILD)
 *   Running on GPU
     *   Graph:
-        [`mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_pose_tracking/holistic_pose_tracking_gpu.pbtxt)
+        [`mediapipe/graphs/holistic_tracking/holistic_tracking_gpu.pbtxt`](https://github.com/google/mediapipe/tree/master/mediapipe/graphs/holistic_tracking/holistic_tracking_gpu.pbtxt)
     *   Target:
-        [`mediapipe/examples/desktop/holistic_pose_tracking:holistic_pose_tracking_gpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/holistic_pose_tracking/BUILD)
+        [`mediapipe/examples/desktop/holistic_tracking:holistic_tracking_gpu`](https://github.com/google/mediapipe/tree/master/mediapipe/examples/desktop/holistic_tracking/BUILD)
 
 ## Resources
 

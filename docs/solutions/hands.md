@@ -8,8 +8,14 @@ nav_order: 4
 # MediaPipe Hands
 {: .no_toc }
 
+<details close markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
 1. TOC
 {:toc}
+</details>
 ---
 
 ## Overview
@@ -229,7 +235,7 @@ for idx, file in enumerate(file_list):
   results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
   # Print handedness and draw hand landmarks on the image.
-  print('handedness:', results.multi_handedness)
+  print('Handedness:', results.multi_handedness)
   if not results.multi_hand_landmarks:
     continue
   image_hight, image_width, _ = image.shape
@@ -237,7 +243,7 @@ for idx, file in enumerate(file_list):
   for hand_landmarks in results.multi_hand_landmarks:
     print('hand_landmarks:', hand_landmarks)
     print(
-        f'index finger tip coordinate: (',
+        f'Index finger tip coordinates: (',
         f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width}, '
         f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_hight})'
     )

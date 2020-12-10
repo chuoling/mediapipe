@@ -8,8 +8,14 @@ nav_order: 1
 # MediaPipe Face Detection
 {: .no_toc }
 
+<details close markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
 1. TOC
 {:toc}
+</details>
 ---
 
 ## Overview

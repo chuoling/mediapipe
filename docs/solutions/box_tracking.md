@@ -8,8 +8,14 @@ nav_order: 9
 # MediaPipe Box Tracking
 {: .no_toc }
 
+<details close markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
 1. TOC
 {:toc}
+</details>
 ---
 
 ## Overview
