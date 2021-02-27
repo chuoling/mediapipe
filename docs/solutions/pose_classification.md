@@ -38,13 +38,16 @@ We picked the
 [k-nearest neighbors algorithm](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm)
 (k-NN) as the classifier. It's simple and easy to start with. The algorithm
 determines the object's class based on the closest samples in the training set.
-To build it, one needs to:
 
-*   Collect image samples of the target exercises and run pose prediction on
+**To build it, one needs to:**
+
+1.  Collect image samples of the target exercises and run pose prediction on
     them,
-*   Convert obtained pose landmarks to a representation suitable for the k-NN
-    classifier and form a training set,
-*   Perform the classification itself followed by repetition counting.
+2.  Convert obtained pose landmarks to a representation suitable for the k-NN
+    classifier and form a training set using these [Colabs](#colabs),
+3.  Perform the classification itself followed by repetition counting (e.g., in
+    the
+    [ML Kit demo app](https://mediapipe.page.link/mlkit-pose-classification-demo-app)).
 
 ## Training Set
 
