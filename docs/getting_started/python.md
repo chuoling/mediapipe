@@ -45,17 +45,23 @@ Tip: Use command `deactivate` to later exit the Python virtual environment.
 To learn more about configuration options and usage examples, please find
 details in each solution via the links below:
 
+*   [MediaPipe Face Detection](../solutions/face_detection#python-solution-api)
 *   [MediaPipe Face Mesh](../solutions/face_mesh#python-solution-api)
 *   [MediaPipe Hands](../solutions/hands#python-solution-api)
-*   [MediaPipe Pose](../solutions/pose#python-solution-api)
 *   [MediaPipe Holistic](../solutions/holistic#python-solution-api)
+*   [MediaPipe Objectron](../solutions/objectron#python-solution-api)
+*   [MediaPipe Pose](../solutions/pose#python-solution-api)
 
 ## MediaPipe on Google Colab
 
+*   [MediaPipe Face Detection Colab](https://mediapipe.page.link/face_detection_py_colab)
 *   [MediaPipe Face Mesh Colab](https://mediapipe.page.link/face_mesh_py_colab)
 *   [MediaPipe Hands Colab](https://mediapipe.page.link/hands_py_colab)
-*   [MediaPipe Pose Colab](https://mediapipe.page.link/pose_py_colab)
 *   [MediaPipe Holistic Colab](https://mediapipe.page.link/holistic_py_colab)
+*   [MediaPipe Objectron Colab](https://mediapipe.page.link/objectron_py_colab)
+*   [MediaPipe Pose Colab](https://mediapipe.page.link/pose_py_colab)
+*   [MediaPipe Pose Classification Colab (Basic)](https://mediapipe.page.link/pose_classification_basic)
+*   [MediaPipe Pose Classification Colab (Extended)](https://mediapipe.page.link/pose_classification_extended)
 
 ## MediaPipe Python Framework
 
@@ -70,6 +76,11 @@ Python package from source. Otherwise, we strongly encourage our users to simply
 run `pip install mediapipe` to use the ready-to-use solutions, more convenient
 and much faster.
 
+MediaPipe PyPI currently doesn't provide aarch64 Python wheel
+files. For building and using MediaPipe Python on aarch64 Linux systems such as
+Nvidia Jetson and Raspberry Pi, please read
+[here](https://github.com/jiuqiant/mediapipe-python-aarch64).
+
 1.  Make sure that Bazel and OpenCV are correctly installed and configured for
     MediaPipe. Please see [Installation](./install.md) for how to setup Bazel
     and OpenCV for MediaPipe on Linux and macOS.
@@ -82,12 +93,18 @@ and much faster.
     $ sudo apt install python3-dev
     $ sudo apt install python3-venv
     $ sudo apt install -y protobuf-compiler
+
+    # If you need to build opencv from source.
+    $ sudo apt install cmake
     ```
 
     macOS:
 
     ```bash
     $ brew install protobuf
+
+    # If you need to build opencv from source.
+    $ brew install cmake
     ```
 
     Windows:
@@ -117,4 +134,11 @@ and much faster.
     ```bash
     (mp_env)mediapipe$ python3 setup.py gen_protos
     (mp_env)mediapipe$ python3 setup.py install --link-opencv
+    ```
+
+    or
+
+    ```bash
+    (mp_env)mediapipe$ python3 setup.py gen_protos
+    (mp_env)mediapipe$ python3 setup.py bdist_wheel
     ```
