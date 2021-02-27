@@ -2,6 +2,7 @@
 layout: default
 title: Pose
 parent: Solutions
+has_children: true
 nav_order: 5
 ---
 
